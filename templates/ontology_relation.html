@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <form class="form-horizontal" id="form_query" action="/ontology_relation/1/" method="post">
+            {%  csrf_token %}
+            <div class="col-sm-2">
+            <button class="btn btn-primary btn-block">全关系本体生成</button>
+        </div>
+        </form>
+    </div>
+    <br>
+
+    {% if results %}
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            本体构建：
+        </div>
+        <div class="panel-body">
+            共查找到数据 {{ count }} 条，部分数据不符合规范，不予现实。
+        </div>
+
+        <table class="table table-hover">
+            <tr>
+                <td>本体</td>
+                <td>权值和概率</td>
+                <td>出现次数</td>
+                <td>实例关系</td>
+                <td>cf</td>
+            </tr>
+
+            {% for item in results %}
+            <tr>
+                <td>{{ item.onto }}</td>
+                <td>{{ item.prob }}</td>
+                <td>{{ item.occurrence }}</td>
+                <td>{{ item.relation }}</td>
+                <td>{{ item.cf }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+    <div class="col-md-offset-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    <a href="/ontology_relation/{{ previous }}/" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+
+                {% for page in pages %}
+                    {% if page == page_active %}
+                        <li class="active"><a href="/ontology_relation/{{ page }}/">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="/ontology_relation/{{ page }}/">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                <li>
+                    <a href="/ontology_relation/{{ next }}/" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+
+{% endblock %}

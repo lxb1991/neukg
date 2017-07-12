@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <form class="form-horizontal" id="form_query" action="/query_msg/" method="post">
+            {%  csrf_token %}
+            <div class="form-group">
+                <label class="col-sm-2">输入关键字</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="query_word" id="query_word" placeholder="机器翻译">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2">查找内容</label>
+                <div class="col-sm-3">
+                    <select class="form-control" name="control">
+                        <option value="1">双语术语</option>
+                        <option value="2">双语标题</option>
+                        <option value="3">全部信息</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <div class="col-sm-offset-2 col-sm-2">
+            <button class="btn btn-primary btn-block" id="query">查找</button>
+        </div>
+
+    </div>
+    <br>
+
+    {% if results %}
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            关键字 <strong class="bg-success">{{ query }}</strong> 查询结果
+        </div>
+        <div class="panel-body">
+            共查找到数据 {{ count }} 条，部分数据不符合规范，不予现实。
+        </div>
+        <table class="table table-hover">
+            {% ifequal control "1" %}
+                <tr>
+                    <td class="col-sm-1">编号</td>
+                    <td class="col-sm-4">中文术语</td>
+                    <td class="col-sm-5">英文术语</td>
+                </tr>
+                {% for item in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.c_keys }}</td>
+                        <td>{{ item.e_keys }}</td>
+                    </tr>
+                {% endfor %}
+            {% endifequal %}
+            {% ifequal control "2" %}
+                <tr>
+                    <td class="col-sm-1">编号</td>
+                    <td class="col-sm-4">中文标题</td>
+                    <td class="col-sm-5">英文标题</td>
+                </tr>
+                {% for item in results %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.c_keys }}</td>
+                    <td>{{ item.e_keys }}</td>
+                </tr>
+                {% endfor %}
+            {% endifequal %}
+            {% ifequal control "3" %}
+                <tr>
+                    <td class="col-sm-1">编号</td>
+                    <td class="col-sm-1">作者</td>
+                    <td class="col-sm-3">标题</td>
+                    <td class="col-sm-3">术语</td>
+                    <td class="col-sm-2">机构</td>
+                    <td class="col-sm-2">杂志</td>
+                    <td class="col-sm-1">领域</td>
+                    <td class="col-sm-1">年份</td>
+                </tr>
+                {% for item in results %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.c_authors }}</td>
+                    <td>{{ item.c_title }}</td>
+                    <td>{{ item.c_keys }}</td>
+                    <td>{{ item.c_org }}</td>
+                    <td>{{ item.c_jour }}</td>
+                    <td>{{ item.doi }}</td>
+                    <td>{{ item.year }}</td>
+                </tr>
+                {% endfor %}
+            {% endifequal %}
+
+        </table>
+        <div class="col-md-offset-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if results.has_previous %}
+                <li>
+                    <a href="/query_msg/{{ control }}/{{ query }}/{{ results.previous_page_number }}/" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for page_num in pages %}
+                    {% if page_num  == results.number %}
+                         <li class="active"><a href="/query_msg/{{ control }}/{{ query }}/{{ page_num }}/">{{page_num}}<span class="sr-only">(current)</span></a></li>
+                    {% else %}
+                         <li class=""><a href="/query_msg/{{ control }}/{{ query }}/{{ page_num }}/">{{page_num}}<span class="sr-only">(current)</span></a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if results.has_next %}
+                <li>
+                    <a href="/query_msg/{{ control }}/{{ query }}/{{ results.next_page_number }}/" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        </div>
+    </div>
+    {% endif %}
+
+{%  endblock %}

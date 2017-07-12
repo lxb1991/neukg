@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <h3>科技文献挖掘</h3>
+            <h3>Technology of Scientific Literature Mining</h3>
+            <p class="col-sm-6">
+                文献挖掘系统为了抽取有利于科研的信息，也为了科研人员方便的查阅和筛选文献。综合的考虑了科技文献的
+                标题、作者、简介、出版机构、杂志、发表时间，从而获取出来了有价值隐含内容，挖掘了深度信息。
+            </p>
+        </div>
+    </div>
+
+
+    <div class="page-header">
+      <h3> 主要功能 <small>点击条目查看内容</small></h3>
+    </div>
+    <div class="list-group">
+        <a href="/survey/" class="list-group-item">
+            综述生成 功能：本体分析表，基本信息分析表，年代分析表，研究机构分析表，杂志分析表，近五年相关论文分析表。</a>
+        <a href="/query_msg/" class="list-group-item">
+            查找信息 功能：可以查找双语术语、双语标题、全部信息。</a>
+        <a href="/hot_research/" class="list-group-item">热点预测 功能： 根据最论文信息，进行科研热点预测</a>
+        <a href="/researcher/" class="list-group-item">科研人员 功能： 输入科研人员，生成科研人员综述信息</a>
+    </div>
+
+{%  endblock %}

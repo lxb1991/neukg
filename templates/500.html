@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h1>服务器正在探索火星...</h1>
+
+    <p>不好意思,请返回首页再试一下把</p>
+
+    <p class="bg-danger">可能错误: {% if error %}{{ error }}{% endif %} </p>
+
+{% endblock %}
