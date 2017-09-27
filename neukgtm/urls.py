@@ -49,4 +49,6 @@ urlpatterns = [
 
     url(r'^cluster/$', views.cluster),
 
+    url(r'^.*$', views.index),
+
 ]

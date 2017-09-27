@@ -15,13 +15,13 @@ def cache(key, value):
 
         del_key = mem_count[0]
 
-        print '删除最久的内存:' + del_key
+        print('remove oldest cache:' + del_key)
 
         del mem_count[0]
 
         del mem[del_key]
 
-    print 'cache key:', key, 'cache count:', len(mem)
+    print('cache key:', key, ';and cache count:', len(mem))
 
     mem[key] = value
 
@@ -32,7 +32,7 @@ def get_cache(key):
 
     if key in mem:
 
-        print '使用缓存 cache key:', key, 'cache count:', len(mem)
+        print('use cache that key is:', key, ';and cache count:', len(mem))
 
         return mem[key]
 

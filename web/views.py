@@ -14,8 +14,6 @@ def query_msg(request, control, query, page):
 
     feedback = {}
 
-    print(control, page, query)
-
     try:
 
         if request.POST.get('query_word'):
