@@ -25,7 +25,7 @@ SECRET_KEY = '_!t^qka_wqobg8mwshe-17t5**o0=uwb+&e!@00(lgv33&5ie)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['60.205.204.74', '127.0.0.1']
+ALLOWED_HOSTS = ['60.205.204.74', '127.0.0.1', 'www.neukg.com']
 
 
 # Application definition
