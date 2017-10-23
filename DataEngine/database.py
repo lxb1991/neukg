@@ -178,6 +178,10 @@ class DBHandler:
                                    c_abs=row['c_abs'], e_abs=row['e_abs'], c_org=row['c_org'], e_org=row['e_org'],
                                    c_journal=row['c_jour'], e_journal=row['e_jour'], doi=row['doi'], year=row['yea'])
 
+            if (paper_data.c_keys and "/" in paper_data.c_keys) or (paper_data.e_keys and "/" in paper_data.e_keys):
+
+                continue
+
             rst.append(paper_data)
 
         return rst
@@ -206,6 +210,10 @@ class DBHandler:
             gl = GeneralRelation()
 
             gl.tgt_concept = row['concept%s' % mark]
+
+            if gl.tgt_concept and "/" in gl.tgt_concept:
+
+                continue
 
             rl_rst = ''
 
