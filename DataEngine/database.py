@@ -91,7 +91,7 @@ class DBManager(object):
 
 class SQL(Const):
 
-    RELATION = "select * from OntologyFullRelation where concept%s = '{topic}' order by confidence desc limit 0,10"
+    RELATION = "select * from ontologyfullrelation where concept%s = '{topic}' order by confidence desc limit 0,10"
 
     BI_SINGLE_TOPIC = "select ckey,ekey from bikey where ckey = '{key}' or ekey = '{key}'"
 
