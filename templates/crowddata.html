@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="container" id="crowd">
+        <div class="row">
+
+        <div class="page-header text-center text-success">
+          <h3> 贡献数据 <small>提交后等待人工审核</small></h3>
+        </div>
+        {% if error %}
+            <div class="col-md-6 col-md-offset-3">
+                <div class="alert alert-danger alert-dismissible" role="alert">{{ error }}</div>
+            </div>
+        {% endif %}
+        <form class="form-horizontal col-md-6 col-md-offset-3" action="/savedata/" method="post">
+            {% csrf_token %}
+          <div class="form-group">
+              <label  class="col-sm-3 control-label">科研人员名称</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" name="author" value="{{ author }}">
+              </div>
+          </div>
+          <div class="form-group">
+              <label class="col-sm-3 control-label">机构</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" name="org" value="{{ org }}">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">研究方向</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" name="key" value="{{ key }}">
+              </div>
+          </div>
+
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">发布杂志社</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" name="journal" value="{{ journal }}">
+              </div>
+          </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox">  同意我们可以使用和传播该数据
+                </label>
+              </div>
+            </div>
+        </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-10">
+                    <button type="submit" class="btn btn-success"> &nbsp;&nbsp;提交&nbsp;&nbsp;</button>
+                </div>
+            </div>
+        </form>
+
+
+
+        </div>
+    </div>
+{% endblock %}

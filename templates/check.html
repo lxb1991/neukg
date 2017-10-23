@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+
+    <div class="container" id="crowd">
+        <div class="row">
+
+            {% if login %}
+
+                <div class="page-header text-success">
+                  <h3>等待审核的内容</h3>
+                </div>
+                <div class="table table-hover">
+                  <table class="table">
+                    <tr>
+                      <td class="active"> 研究人员</td>
+                      <td class="active"> 研究方向</td>
+                      <td class="active"> 研究机构</td>
+                      <td class="active"> 出版杂志</td>
+
+                    </tr>
+                    {% for data in datas %}
+                    <tr>
+
+                      <td >{{ data.author }}</td>
+                      <td >{{ data.key }}</td>
+                      <td >{{ data.org }}</td>
+                      <td >{{ data.journal }}</td>
+                    </tr>
+                    {% endfor %}
+
+                  </table>
+                </div>
+
+            {% else %}
+                <form class="form-horizontal col-md-6 col-md-offset-3" action="/check/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <label  class="col-sm-3 control-label">输入密码</label>
+                      <div class="col-sm-8">
+                        <input type="password" class="form-control" name="password">
+                      </div>
+                    </div>
+                    {% if error %}
+                        <div class="form-group">
+                            <label  class="col-sm-5 text-danger control-label">{{ error }}</label>
+                        </div>
+                    {% endif %}
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-10">
+                            <button type="submit" class="btn btn-success"> &nbsp;&nbsp;提交&nbsp;&nbsp; </button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

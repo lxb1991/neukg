@@ -14,41 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from django.contrib import admin
 from web import views
 
 urlpatterns = [
 
-    url(r'^admin/', admin.site.urls),
-
     url(r'^index/$', views.index),
 
-    url(r'^query_msg/$', views.query_msg, {'control': '0', 'query': '', 'page': '0'}),
+    url(r'^search/(?P<query>[^/]*)/$', views.search, name="search"),
 
-    url(r'^query_msg/(?P<control>[0-9]*)/(?P<query>[^/]*)/(?P<page>[0-9]*)', views.query_msg),
+    url(r'^researcher/(?P<query>[^/]*)/$', views.researcher, name="researcher"),
 
-    url(r'^survey/$', views.survey),
+    url(r'^topic/(?P<query>[^/]*)/$', views.topic, name="topic"),
 
-    url(r'^hot_research/$', views.hot_research, {'page': '0'}),
+    url(r'^crowddata/$', views.crowd),
 
-    url(r'^hot_research/(?P<page>[0-9]*)', views.hot_research),
+    url(r'^savedata/$', views.save),
 
-    url(r'^relation/$', views.relation, {'query': '', 'page': '0'}),
-
-    url(r'^relation/(?P<query>[^/]*)/(?P<page>[0-9]*)', views.relation),
-
-    url(r'^ontology/$', views.ontology, {'page': '0'}),
-
-    url(r'^ontology/(?P<page>[0-9]*)', views.ontology),
-
-    url(r'^ontology_relation/$', views.ontology_relation, {'page': '0'}),
-
-    url(r'^ontology_relation/(?P<page>[0-9]*)', views.ontology_relation),
-
-    url(r'^researcher/$', views.researcher),
-
-    url(r'^cluster/$', views.cluster),
-
-    url(r'^.*$', views.index),
+    url(r'^check/$', views.check),
 
 ]

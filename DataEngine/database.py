@@ -2,7 +2,11 @@
 import MySQLdb
 import threading
 from DBUtils.PooledDB import PooledDB
-from data import Const, BiData, PaperData, OntologyRelation, RelationList, GeneralRelation
+from data import Const, PaperData, OntologyRelation, RelationList, GeneralRelation, BiData, CrowdData
+import logging
+
+
+logger = logging.getLogger('pixiu')
 
 
 class DBManager(object):
@@ -20,7 +24,7 @@ class DBManager(object):
 
         if not DBManager.__instance:
 
-            print(' DBManager 实例 初始化')
+            logger.info(' DBManager 实例 初始化')
 
             DBManager.__instance = object.__new__(cls, *args, **kwargs)
 
@@ -34,7 +38,7 @@ class DBManager(object):
 
         if not DBManager.__instance.__pool:
 
-            print(' DBManager 连接池 pool 初始化')
+            logger.info(' DBManager 连接池 pool 初始化')
 
             self.__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
                                    passwd='lxb123456', db='textmining', charset='utf8')
@@ -44,7 +48,7 @@ class DBManager(object):
     def query(self, sql, * is_dic):
         """ is_dic type: bool. 返回 cursor 是否需要使用 DictCursor """
 
-        print('查询的sql为：%s' % sql)
+        logger.info('查询的sql为：%s' % sql)
 
         conn = self.__pool.connection()
 
@@ -58,7 +62,7 @@ class DBManager(object):
 
         cursor.execute(sql)
 
-        print('查询结果数量为：%d' % cursor.rowcount)
+        logger.info('查询结果数量为：%d' % cursor.rowcount)
 
         result = cursor.fetchall()
 
@@ -68,32 +72,41 @@ class DBManager(object):
 
         return result
 
+    def save(self, sql):
+
+        logger.info('存储sql：%s' % sql)
+
+        conn = self.__pool.connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute(sql)
+
+        conn.commit()
+
+        cursor.close()
+
+        conn.close()
+
 
 class SQL(Const):
 
-    BI_TOPIC = "select distinct c_keys,e_keys,yea from computer where c_keys like '%{topic}%' order by yea desc"
-
-    BI_TITLE = "select distinct c_title,e_title,yea from computer where c_title like '%{title}%' order by yea desc"
-
-    PAPER = "select distinct * from computer where c_keys like '%{topic}%' or c_title like '%{topic}%' order by yea desc"
-
-    SURVEY = "select * from computer where c_keys like '%{topic}%' or c_title like '%{topic}%'"
-
     RELATION = "select * from OntologyFullRelation where concept%s = '{topic}' order by confidence desc limit 0,10"
 
-    RESEARCHER = "select * from computer where c_authors like '%{author}%'"
+    BI_SINGLE_TOPIC = "select ckey,ekey from bikey where ckey = '{key}' or ekey = '{key}'"
 
-    AUTHOR_RELATION = "select * from computer where c_keys like '%{topic}%' or c_title like '%{topic}%' order by yea desc limit 0,50"
+    BI_TOPIC = "select distinct c_keys,e_keys,yea from computer where c_keys like '%{topic}%' or e_keys like '%{topic}%' order by yea desc"
 
-    HOT_RESEARCH = "select * from computer order by yea desc limit 0,50000"
+    RESEARCHER = "select distinct * from computer where c_authors like '%{name}%' or e_authors like '%{name}%'"
 
-    ONTOLOGY = "select c_keys from computer where yea ='1987' limit 0,500"
+    PAPER = "select distinct * from computer where c_keys like '%{topic}%' or e_keys like '%{topic}%' order by yea desc"
 
-    ONTOLOGY_UNSUPERVISED = "select * from computer where c_keys like '%{topic}%' or c_title like '%{topic}%' "
+    MORE_PAPER = "select distinct * from computer where c_keys like '%{topic}%' or e_keys like '%{topic}%' " \
+                 "or c_authors like '%{topic}%' or e_authors like '%{topic}%' order by yea desc"
 
-    TOPIC = "select distinct * from computer where c_keys like '%{topic}%' or c_title like '%{topic}%'"
+    SAVE_UNCHECKED = "insert into uncheck(author, org, research, journal)values('{author}','{org}','{key}','{journal}')"
 
-    EXTEND_TOPIC = "select * from OntologyFullRelation where concept%s = '{topic}' order by confidence desc limit 0,2"
+    UNCHECKED = "select * from uncheck"
 
 
 class DBHandler:
@@ -128,11 +141,28 @@ class DBHandler:
 
             if (row[0] and row[0].strip() != '') and (row[1] and row[1].strip() != ''):
 
-                bi_dr = BiData(row[0], row[1])
+                bi_dr = BiData()
+
+                bi_dr.bi_cn = row[0]
+
+                bi_dr.bi_en = row[1]
 
                 rst.append(bi_dr)
 
         return rst
+
+    @staticmethod
+    def get_single_bi_data(sql):
+
+        results = DBManager().query(sql)
+
+        if results:
+
+            return results[0]
+
+        else:
+
+            return None, None
 
     @staticmethod
     def get_paper_data(sql):
@@ -173,17 +203,9 @@ class DBHandler:
 
             rc.tgt_concept = row['concept%s' % mark]
 
-            rc.co_occurrence = int(row['co_occurence'])
-
-            rc.confidence = float(row['confidence'])
-
             gl = GeneralRelation()
 
             gl.tgt_concept = row['concept%s' % mark]
-
-            gl.co_occurrence = rc.co_occurrence
-
-            gl.confidence = rc.confidence
 
             rl_rst = ''
 
@@ -269,5 +291,33 @@ class DBHandler:
         for row in results:
 
             rst += row['concept%s' % mark] + '# '
+
+        return rst
+
+    @staticmethod
+    def save_crowd_data(sql):
+
+        DBManager().save(sql)
+
+    @staticmethod
+    def get_crowd_data(sql):
+
+        rst = []
+
+        results = DBManager().query(sql, True)
+
+        for row in results:
+
+            data = CrowdData()
+
+            data.author = row['author']
+
+            data.key = row['research']
+
+            data.org = row['org']
+
+            data.journal = row['journal']
+
+            rst.append(data)
 
         return rst

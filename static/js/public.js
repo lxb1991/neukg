@@ -20,15 +20,22 @@ $(function(){
         $('body,html').animate({ scrollTop: 0 }, 800);
     });
 
-    $('#query').click(function () {
-
-        if($('#query_word').val().trim() == "") {
-
-            alert('请输入关键字');
-
-        }else{
-
-            $('#form_query').submit();
-        }
-    });
 });
+
+function query() {
+
+    var query = $('#query_word').val().trim();
+
+    if(query == "") {
+
+        alert('请输入关键字');
+
+    }else{
+
+        var url = "/search/";
+
+        const finalUrl = url + query +'/';
+
+        window.location.href = finalUrl;
+    }
+}

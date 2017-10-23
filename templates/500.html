@@ -2,10 +2,26 @@
 
 {% block content %}
 
-    <h1>服务器正在探索火星...</h1>
 
-    <p>不好意思,请返回首页再试一下把</p>
+    <div class="container" id="tip">
 
-    <p class="bg-danger">可能错误: {% if error %}{{ error }}{% endif %} </p>
+
+        <h1 class="text-center text-danger">服务器在探索火星</h1>
+
+        <p class="text-center">可能是网络的原因，如果一直无法访问，请重新输入或联系工作人员！</p>
+
+        <p class="text-center"> 3秒后跳转主页 </p>
+
+    </div>
+
+    <script type="text/javascript">
+
+        onload=function(){
+            setTimeout(go, 3000);
+        };
+        function go(){
+            location.href="/index/";
+        }
+    </script>
 
 {% endblock %}

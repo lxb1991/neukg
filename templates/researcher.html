@@ -2,372 +2,72 @@
 
 {% block content %}
 
-    <div class="container">
-
-        <form class="form-inline" id="form_query" action="/researcher/" method="post">
-            {%  csrf_token %}
-            <div class="col-sm-4">
-            <div class="form-group">
-                <label for="query_word">输入科研人员姓名&nbsp;&nbsp;:&nbsp;&nbsp;</label>
-                <input type="text" class="form-control" name="query_word" id="query_word" placeholder="任飞亮">
+    <div class="search_top">
+        <div class="s-bar">
+            <div>
+                <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
+                <input type="submit" id="query" value="搜索" onclick="query()"/>
             </div>
-            </div>
-        </form>
-        <div class="col-sm-2">
-            <button class="btn btn-primary btn-block" id="query">科研人员信息分析</button>
         </div>
     </div>
-    <br>
-    <br>
-    <div class="container">
-        {% if survey %}
-        <ul>
-            <li><a href="#TAB1">科研人员分析表</a></li>
-            <li><a href="#TAB2">基本信息分析表</a></li>
-            <li><a href="#TAB3">年代分析表</a></li>
-            <li><a href="#TAB4">研究机构分析表</a></li>
-            <li><a href="#TAB5">杂志分析表</a></li>
-            <li><a href="#TAB6">近五年相关论文分析表</a></li>
-        </ul>
-        <div class="panel panel-default">
 
-            <div class="panel-heading">
-                <a name="TAB1">科研人员分析表</a>
-            </div>
+    <canvas id="viewport"></canvas>
+    <script>
+    $(document).ready(function () {
 
-            <table class="table table-hover">
-                <tr class="info" >
-                    <td>研究人员</td>
-                    <td colspan="2">{{ query }}</td>
-                    <td>论文总数</td>
-                    <td colspan="2">{{ survey.title_list|length }}</td>
-                </tr>
-                <tr>
-                    <td ><nobr>科研人员总数</nobr></td>
-                    <td colspan="5">{{ survey.researcher_list|length }}个：
-                        {% for r in survey.researcher_list %}
-                            {{ r }}&nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td >科研机构总数</td>
-                    <td colspan="5">{{ survey.org_list|length }}个：
-                        {% for r in survey.org_list %}
-                            {{ r }}&nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td >论文出现年数</td>
-                    <td colspan="5">{{ survey.year_list|length }}个：
-                        {% for r in survey.year_list %}
-                            {{ r }}&nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td >中文研究主题</td>
-                    <td colspan="5">{{ survey.related_c_topic_list|length }}个：
-                        {% for r in survey.related_c_topic_list %}
-                            {{ r }}&nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-                            <tr>
-                    <td >英文研究主题</td>
-                    <td colspan="5">{{ survey.related_e_topic_list|length }}个：
-                        {% for r in survey.related_e_topic_list %}
-                            {{ r }}&nbsp;
-                        {% endfor %}
-                    </td>
-                </tr>
-            </table>
-        </div>
+        var theUI = {
+          nodes:{
+                "{{query}}":{color:"#FF3900", shape:"dot", alpha:1},
 
-        <div class="panel panel-default">
-
-            <div class="panel-heading">
-                <a name="TAB2">基本信息分析表</a>
-            </div>
-
-            <table class="table table-hover">
-                <tr>
-                    <td class="info">平均每年论文数</td>
-                    <td colspan="2">{{ survey.hot_degree.avg_pap_year }}</td>
-                    <td class="info">近三年论文数</td>
-                    <td colspan="2">{{ survey.hot_degree.avg_pap_3year }}</td>
-                </tr>
-                <tr>
-                    <td colspan="6">
-                        <div class="row">
-                            <div class="col-sm-4 col-sm-offset-1">
-                                <canvas id="Chart5"></canvas>
-                                <script>
-                                    var data = {
-                                        labels : ['最近一年', '最近二年', '最近三年'],
-                                        datasets : [
-                                            {
-                                                label: "近三年论文数量变化率",
-                                                borderColor: 'rgba(51,204,204,0.5)',
-                                                data : [{% for pap in survey.hot_degree.pap_increment_3year %}{{ pap }},{% endfor %}]
-                                            },
-                                        ],
-                                    };
-                                    var ctx = $('#Chart5')[0].getContext('2d');
-                                    new Chart(ctx, {type: 'line', data: data, })
-                                </script>
-                            </div>
-                            <div class="col-sm-4 col-sm-offset-1">
-                                <canvas id="Chart6"></canvas>
-                                <script>
-                                    var data = {
-                                        labels : ['最近一年', '最近二年', '最近三年'],
-                                        datasets : [
-                                            {
-                                                label: "近三年科研人员数量变化率",
-                                                borderColor: 'rgba(51,204,204,0.5)',
-                                                data : [{% for pap in survey.hot_degree.person_increment_3year %}{{ pap }},{% endfor %}]
-                                            },
-                                        ],
-                                    };
-                                    var ctx = $('#Chart6')[0].getContext('2d');
-                                    new Chart(ctx, {type: 'line', data: data, })
-                                </script>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="6">
-                        <div class="row">
-                            <div class="col-sm-4 col-sm-offset-1">
-                                <canvas id="Chart7"></canvas>
-                                <script>
-                                    var data = {
-                                        labels : ['最近一年', '最近二年', '最近三年'],
-                                        datasets : [
-                                            {
-                                                label: "近三年科研机构数量变化率",
-                                                borderColor: 'rgba(51,204,204,0.5)',
-                                                data : [{% for pap in survey.hot_degree.org_increment_3year %}{{ pap }},{% endfor %}]
-                                            },
-                                        ],
-                                    };
-                                    var ctx = $('#Chart7')[0].getContext('2d');
-                                    new Chart(ctx, {type: 'line', data: data, })
-                                </script>
-                            </div>
-                            <div class="col-sm-4 col-sm-offset-1">
-                                <canvas id="Chart8"></canvas>
-                                <script>
-                                    var data = {
-                                        labels : ['最近一年', '最近二年', '最近三年'],
-                                        datasets : [
-                                            {
-                                                label: "近三年杂志论文数量变化率",
-                                                borderColor: 'rgba(51,204,204,0.5)',
-                                                data : [{% for pap in survey.hot_degree.journal_increment_3year %}{{ pap }},{% endfor %}]
-                                            },
-                                        ],
-                                    };
-                                    var ctx = $('#Chart8')[0].getContext('2d');
-                                    new Chart(ctx, {type: 'line', data: data, })
-                                </script>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="6">
-                        <div class="row">
-                            <div class="col-sm-4 col-sm-offset-1">
-                                <canvas id="Chart9"></canvas>
-                                <script>
-                                    var data = {
-                                        labels : ['最近一年', '最近二年', '最近三年'],
-                                        datasets : [
-                                            {
-                                                label: "近三年相关研究点数量变化率",
-                                                borderColor: 'rgba(51,204,204,0.5)',
-                                                data : [{% for pap in survey.hot_degree.key_increment_3year %}{{ pap }},{% endfor %}]
-                                            },
-                                        ],
-                                    };
-                                    var ctx = $('#Chart9')[0].getContext('2d');
-                                    new Chart(ctx, {type: 'line', data: data, })
-                                </script>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="1">研究热度评价</td>
-                    <td colspan="5">{{ survey.hot_degree.hot }}</td>
-                </tr>
-
-            </table>
-        </div>
-
-        <div class="panel panel-default">
-
-            <div class="panel-heading">
-                <a name="TAB3">年代分析表</a>
-            </div>
-            <div class="panel-body">
-                共有 {{ survey.year_paps_info|length }} 年有研究论文发表，具体如下
-            </div>
-            <table class="table table-hover">
-                <tr class="info">
-                    <td>年代</td>
-                    <td>相关信息</td>
-                </tr>
-                {% for item in survey.year_paps_info.items reversed %}
-                <tr>
-                    <td>{{ item.0 }}</td>
-                    <td>
-                        <strong>相关主题:</strong><br> 共{{ item.1.relate_topic|length }}个：
-                        {% for topic in item.1.relate_topic %}
-                            {{ topic }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关杂志:</strong><br> 共{{ item.1.journal_list|length }}个：
-                        {% for jour in item.1.jour_list %}
-                            {{ jour }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关研究人员:</strong><br> 共{{ item.1.researchers|length }}个：
-                        {% for researcher in item.1.researchers %}
-                            {{ researcher }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关论文名称:</strong><br> 共{{ item.1.titles|length }}个：
-                        {% for title in item.1.titles %}
-                            {{ title }}&nbsp
-                        {% endfor %}
-                        <br>
-                    </td>
-                </tr>
+                "研究方向":{color:"#FF8B00", shape:"dot", alpha:1},
+                {% for topic in researcher.topics %}
+                    '{{ topic }}':{color:"#086CA2", alpha:1, link:"{% url 'topic' query=topic %}"},
                 {% endfor %}
-            </table>
-        </div>
-
-        <div class="panel panel-default">
-
-            <div class="panel-heading">
-                <a name="TAB4">研究机构分析表</a>
-            </div>
-            <div class="panel-body">
-                共有 {{ survey.org_paps_info|length }} 个机构有研究论文发表，具体如下
-            </div>
-
-            <table class="table table-hover">
-                <tr class="info">
-                    <td>研究机构</td>
-                    <td>相关信息</td>
-                </tr>
-                {% for item in survey.org_paps_info.items %}
-                <tr>
-                    <td>{{ item.0 }}</td>
-                    <td>
-                        <strong>相关主题:</strong><br> 共{{ item.1.relate_topic|length }}个：
-                        {% for topic in item.1.relate_topic %}
-                            {{ topic }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关杂志:</strong><br> 共{{ item.1.journal_list|length }}个：
-                        {% for jour in item.1.jour_list %}
-                            {{ jour }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关研究人员:</strong><br> 共{{ item.1.researchers|length }}个：
-                        {% for researcher in item.1.researchers %}
-                            {{ researcher }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关论文名称:</strong><br> 共{{ item.1.titles|length }}个：
-                        {% for title in item.1.titles %}
-                            {{ title }}&nbsp
-                        {% endfor %}
-                        <br>
-                    </td>
-                </tr>
+                "相关人员":{color:"#FF8B00", shape:"dot", alpha:1},
+                {% for item in researcher.researchers %}
+                    '{{ item }}':{color:"#086CA2", alpha:1, link:"{% url 'researcher' query=item %}"},
                 {% endfor %}
-            </table>
-        </div>
-
-        <div class="panel panel-default">
-
-            <div class="panel-heading">
-                <a name="TAB5">杂志分析表</a>
-            </div>
-            <div class="panel-body">
-                共有 {{ survey.journal_paps_info|length }} 个杂志有研究论文发表，具体如下
-            </div>
-
-            <table class="table table-hover">
-                <tr class="info">
-                    <td>杂志名</td>
-                    <td>相关信息</td>
-                </tr>
-                {% for item in survey.journal_paps_info.items %}
-                <tr>
-                    <td><nobr>{{ item.0 }}</nobr></td>
-                    <td>
-                        <strong>相关主题:</strong><br> 共{{ item.1.relate_topic|length }}个：
-                        {% for topic in item.1.relate_topic %}
-                            {{ topic }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关机构:</strong><br> 共{{ item.1.org_list|length }}个：
-                        {% for org in item.1.org_list %}
-                            {{ org }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关研究人员:</strong><br> 共{{ item.1.researchers|length }}个：
-                        {% for researcher in item.1.researchers %}
-                            {{ researcher }}&nbsp
-                        {% endfor %}
-                        <br>
-                        <strong>相关论文名称:</strong><br> 共{{ item.1.titles|length }}个：
-                        {% for title in item.1.titles %}
-                            {{ title }}&nbsp
-                        {% endfor %}
-                        <br>
-                    </td>
-                </tr>
+                "所在机构":{color:"#FF8B00", shape:"dot", alpha:1},
+                {% for org in researcher.organizations %}
+                    '{{ org }}':{color:"#086CA2", alpha:1},
                 {% endfor %}
-            </table>
-        </div>
-
-        <div class="panel panel-default">
-
-            <div class="panel-heading">
-                <a name="TAB6">近五年论文列表</a>
-            </div>
-            <table class="table table-hover">
-                <tr class="info">
-                    <td>年代</td>
-                    <td>相关信息</td>
-                </tr>
-                {% for item in survey.year_paps_info.items|slice:"-5:" reversed %}
-                    {% for pap in item.1.paps %}
-                        <tr>
-                            <td><nobr>{{ item.0 }}</nobr></td>
-                            <td>
-                                <strong>论文题目:</strong>{{ pap.c_title }}<br>
-                                <strong>相关人员:</strong>{{ pap.c_authors }}<br>
-                                <strong>所属机构:</strong>{{ pap.c_org }}<br>
-                                <strong>所属杂志:</strong>{{ pap.c_journal }}<br>
-                                <strong>论文简介:</strong>{{ pap.c_abs }}
-                            </td>
-                        </tr>
-                    {% endfor %}
+                "论文出版社":{color:"#FF8B00", shape:"dot", alpha:1},
+                {% for journal in researcher.journals %}
+                    '{{ journal }}':{color:"#086CA2", alpha:1},
                 {% endfor %}
-            </table>
-        </div>
-        {% endif %}
+                },
+          edges:{
+                "{{query}}":{
+                    "研究方向":{length:.8},
+                    "相关人员":{length:.8},
+                    "所在机构":{length:.8},
+                    "论文出版社":{length:.8},
+                },
+                '研究方向':{
+                {% for topic in researcher.topics %}
+                    '{{ topic }}':{},
+                {% endfor %}
+                },
+                '相关人员':{
+                {% for item in researcher.researchers %}
+                    '{{ item }}':{},
+                {% endfor %}
+                },
+                '所在机构':{
+                {% for org in researcher.organizations %}
+                    '{{ org }}':{},
+                {% endfor %}
+                },
+                '论文出版社':{
+                {% for journal in researcher.journals %}
+                    '{{ journal }}':{length:.5},
+                {% endfor %}
+                },
+          }
+        };
+        initGraph(theUI);
+    });
 
-    </div>
+    </script>
 
 {% endblock %}

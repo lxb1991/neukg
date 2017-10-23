@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
-from TextMining import memcache, mine
+from DataEngine import memcache, engine
+from DataEngine.data import CrowdData
+import logging
+
+
+# 获取log的实例
+logger = logging.getLogger('pixiu')
 
 
 def index(request):
@@ -10,256 +15,137 @@ def index(request):
     return render(request, 'index.html')
 
 
-def query_msg(request, control, query, page):
+def search(request, query):
 
     feedback = {}
 
-    try:
+    logger.info("输入的参数：%s" % query)
 
-        if request.POST.get('query_word'):
+    # 查看是否有科研人员
+    staff = memcache.researcher_generate(query)
 
-            query = request.POST.get('query_word')
+    if staff:
 
-        if request.POST.get('control'):
+        return to_researcher(request, query, staff)
 
-            control = request.POST.get('control')
+    # 查看是否有概念的信息
+    topics = memcache.topic_generate(query)
 
-        page = int(page) if int(page) > 1 else 1
+    if topics:
 
-        if query.strip():  # 判断是否返回数据 依据就是 query 是否为空
+        return to_topic(request, query, topics)
 
-            if control == '1':
+    feedback['query'] = query
 
-                result = memcache.msg_keys_generate(query)
-
-            elif control == '2':
-
-                result = memcache.msg_title_generate(query)
-
-            else:
-
-                result = memcache.msg_full_generate(query)
-
-            # 需要传递到view的数据
-            feedback['count'] = len(result)
-
-            feedback['control'] = control
-
-            feedback['query'] = query
-
-            feedback['results'], feedback['pages'] = pagination(result, page)
-
-    except Exception as e:
-
-        print(e.message)
-
-        feedback['error'] = "你的请求url可能有问题，请点击热点预测按钮发起请求。请再试一试！"
-
-        return render(request, '500.html', feedback)
-
-    return render(request, 'query_msg.html', feedback)
+    return render(request, "noresult.html", feedback)
 
 
-def survey(request):
-    """ 生成综述信息 """
+def researcher(request, query):
+
+    data = memcache.researcher_generate(query)
+
+    return to_researcher(request, query, data)
+
+
+def topic(request, query):
+
+    topics = memcache.topic_generate(query)
+
+    return to_topic(request, query, topics)
+
+
+def to_researcher(request, query, data):
 
     feedback = {}
 
-    if request.method == 'POST' and request.POST.get('query_word').strip():
+    logger.info("输入的参数：%s" % query)
 
-        query = request.POST.get('query_word').strip()
+    feedback['query'] = query
 
-        try:
-
-            feedback['survey'], feedback['upper'], feedback['lower'], feedback['desc'] = mine.get_survey(query)
-
-        except BaseException as e:
-
-            print(e.message)
-
-            feedback['error'] = "你的输入的方向，好像没有人有研究。请换一个关键字再试一试！"
-
-            return render(request, '500.html', feedback)
-
-    return render(request, 'survey.html', feedback)
-
-
-def hot_research(request, page):
-    """ 热点查询 """
-
-    feedback = {}
-
-    if page != '0':
-
-        try:
-
-            page = int(page)
-
-            results = memcache.hot_research_generate()
-
-            feedback['count'] = len(results)
-
-            feedback['results'], feedback['pages'] = pagination(results, page)
-
-        except Exception as e:
-
-            print(e.message)
-
-            feedback['error'] = "你的请求url可能有问题，请点击热点预测按钮发起请求。请再试一试！"
-
-            return render(request, '500.html', feedback)
-
-    return render(request, 'hot_research.html', feedback)
-
-
-def relation(request, query, page):
-    """ 用户关系查询"""
-
-    feedback = {}
-
-    if not query:
-
-        query = request.POST.get('query_word')
-
-    if page != '0':
-
-            page = int(page)
-
-            print(query, page)
-
-            results = memcache.author_relation_generate(query)
-
-            feedback['query'] = query
-
-            feedback['count'] = len(results)
-
-            feedback['results'], feedback['pages'] = pagination(results, page)
-
-    return render(request, 'relation.html', feedback)
-
-
-def ontology(request, page):
-
-    feedback = {}
-
-    if page != '0':
-
-        page = int(page)
-
-        results = memcache.ontology_generate()
-
-        feedback['count'] = len(results)
-
-        feedback['results'], feedback['pages'] = pagination(results, page)
-
-    return render(request, 'ontology.html', feedback)
-
-
-def ontology_relation(request, page):
-
-    feedback = {}
-
-    if page != '0':
-
-        page = int(page)
-
-        results = memcache.ontology_relation_generate()
-
-        feedback['count'] = len(results)
-
-        feedback['results'], feedback['pages'] = pagination(results, page)
-
-    return render(request, 'ontology_relation.html', feedback)
-
-
-def cluster(request):
-
-    feedback = {}
-
-    if request.method == 'POST' and request.POST.get('query_word').strip():
-
-        query = request.POST.get('query_word').strip()
-
-        feedback['results'] = memcache.cluster(query)
-
-    return render(request, 'cluster.html', feedback)
-
-
-def researcher(request):
-    """ 科研人员信息查询 """
-
-    feedback = {}
-
-    if request.method == 'POST' and request.POST.get('query_word').strip():
-
-        query = request.POST.get('query_word').strip()
-
-        feedback['query'] = query
-
-        try:
-
-            feedback['survey'] = mine.get_researcher(query)
-
-        except BaseException as e:
-
-            print(e.message)
-
-            feedback['error'] = "你的输入的研究人员，查无此人。请换一个研究人再试一试！"
-
-            return render(request, '500.html', feedback)
+    feedback['researcher'] = data
 
     return render(request, 'researcher.html', feedback)
 
 
-def pagination(result, page):
-    """ 为了实现分页功能 传递的方法：result 是传人需要分页的数据， page 是当前页"""
+def to_topic(request, query, topics):
 
-    paginator = Paginator(result, 50)  # 默认每页有50条数据。
+    feedback = {}
 
-    try:
-        result = paginator.page(page)
+    logger.info("输入的参数：%s" % query)
 
-    except PageNotAnInteger:
+    feedback['query'] = query
 
-        # If page is not an integer, deliver first page.
-        result = paginator.page(1)
+    feedback['topics'] = topics
 
-    except EmptyPage:
+    return render(request, 'topic.html', feedback)
 
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        result = paginator.page(paginator.num_pages)
 
-    if len(paginator.page_range) > 4:
+def crowd(request):
 
-        if result.number > 3:
+    return render(request, "crowddata.html")
 
-            first = result.number - 2
+
+def save(request):
+
+    if not request.POST:
+
+        return render(request, "index.html")
+
+    feedback = {}
+
+    data = CrowdData()
+
+    author = request.POST.get("author")
+
+    org = request.POST.get("org")
+
+    key = request.POST.get("key")
+
+    journal = request.POST.get("journal")
+
+    if author and key and org and journal:
+
+        data.author = author
+
+        data.key = key
+
+        data.org = org
+
+        data.journal = journal
+
+        engine.save_unchecked_paper(data)
+
+        return render(request, "success.html")
+
+    feedback["author"] = author
+
+    feedback["org"] = org
+
+    feedback["key"] = key
+
+    feedback["journal"] = journal
+
+    feedback["error"] = "请完整、正确的填写要求的数据"
+
+    return render(request, "crowddata.html", feedback)
+
+
+def check(request):
+
+    feedback = {}
+
+    if request.POST:
+
+        pwd = request.POST.get("password")
+
+        if pwd == 'neukg':
+
+            feedback['login'] = True
+
+            feedback['datas'] = engine.get_crowd_data()
 
         else:
 
-            first = 1
+            feedback["error"] = "密码错误！！！"
 
-        if paginator.num_pages - result.number > 3:
-
-            last = result.number + 2
-
-        else:
-
-            last = paginator.num_pages
-
-        if last - first < 4:
-
-            if first == 1:
-
-                last = first + 4
-            else:
-
-                first = last - 4
-
-        pages = range(first, last + 1)
-
-    else:
-
-        pages = paginator.page_range
-
-    return result, pages
+    return render(request, "check.html", feedback)

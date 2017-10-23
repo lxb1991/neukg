@@ -2,22 +2,21 @@
 
 {% block content %}
 
-
     <div class="container" id="tip">
 
 
-        <h1 class="text-center text-danger">404 NOT FOUND</h1>
+        <h1 class="text-center text-success">添加成功</h1>
 
-        <p class="text-center">不好意思，您请求的页面有问题，请重新输入或联系工作人员！</p>
+        <p class="text-center">我们的工作人员会尽快进行审核，请等待人工审核。。。</p>
 
-        <p class="text-center"> 3秒后跳转主页 </p>
+        <p class="text-center"> 5秒后跳转主页 </p>
 
     </div>
 
     <script type="text/javascript">
 
         onload=function(){
-            setTimeout(go, 3000);
+            setTimeout(go, 5000);
         };
         function go(){
             location.href="/index/";
