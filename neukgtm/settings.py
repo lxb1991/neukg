@@ -137,7 +137,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
             'standard': {
-                'format': '%(levelname)s %(asctime)s %(pathname)s %(filename)s %(module)s %(funcName)s'
+                'format': '%(levelname)s %(asctime)s %(filename)s %(module)s %(funcName)s'
                           ' %(lineno)d: %(message)s'
             },
         },
