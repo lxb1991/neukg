@@ -8,85 +8,55 @@ import logging
 
 logger = logging.getLogger('pixiu')
 
+logger.info("初始化->数据库实例")
 
-class DBManager(object):
-    """ 数据库连接管理 """
-
-    __instance = None
-
-    __pool = None
-
-    __mutex = threading.Lock()
-
-    def __new__(cls, *args, **kwargs):
-
-        DBManager.__mutex.acquire()
-
-        if not DBManager.__instance:
-
-            logger.info(' DBManager 实例 初始化')
-
-            DBManager.__instance = object.__new__(cls, *args, **kwargs)
-
-        DBManager.__mutex.release()
-
-        return DBManager.__instance
-
-    def __init__(self):
-
-        DBManager.__mutex.acquire()  # 加锁 防止多次init
-
-        if not DBManager.__instance.__pool:
-
-            logger.info(' DBManager 连接池 pool 初始化')
-
-            self.__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
+__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
                                    passwd='lxb123456', db='textmining', charset='utf8')
 
-        DBManager.__mutex.release()
 
-    def query(self, sql, * is_dic):
-        """ is_dic type: bool. 返回 cursor 是否需要使用 DictCursor """
+def query(sql, * is_dic):
+    """ is_dic type: bool. 返回 cursor 是否需要使用 DictCursor """
 
-        logger.info('查询的sql为：%s' % sql)
+    logger.info('查询的sql为：%s' % sql)
 
-        conn = self.__pool.connection()
+    conn = __pool.connection()
 
-        if is_dic:
+    if is_dic:
 
-            cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+        cursor = conn.cursor(MySQLdb.cursors.DictCursor)
 
-        else:
-
-            cursor = conn.cursor()
-
-        cursor.execute(sql)
-
-        logger.info('查询结果数量为：%d' % cursor.rowcount)
-
-        result = cursor.fetchall()
-
-        cursor.close()
-
-        conn.close()
-
-        return result
-
-    def save(self, sql):
-
-        logger.info('存储sql：%s' % sql)
-
-        conn = self.__pool.connection()
+    else:
 
         cursor = conn.cursor()
 
-        cursor.execute(sql)
+    cursor.execute(sql)
 
-        conn.commit()
+    logger.info('查询结果数量为：%d' % cursor.rowcount)
 
-        cursor.close()
+    result = cursor.fetchall()
 
-        conn.close()
+    cursor.close()
+
+    conn.close()
+
+    return result
+
+
+def save(sql):
+
+    logger.info('存储sql：%s' % sql)
+
+    conn = __pool.connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(sql)
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
 
 
 class SQL(Const):
@@ -120,7 +90,7 @@ class DBHandler:
 
         rst = []
 
-        results = DBManager().query(sql)
+        results = query(sql)
 
         for row in results:
 
@@ -135,7 +105,7 @@ class DBHandler:
 
         rst = []
 
-        results = DBManager().query(sql)
+        results = query(sql)
 
         for row in results:
 
@@ -154,7 +124,7 @@ class DBHandler:
     @staticmethod
     def get_single_bi_data(sql):
 
-        results = DBManager().query(sql)
+        results = query(sql)
 
         if results:
 
@@ -169,7 +139,7 @@ class DBHandler:
 
         rst = []
 
-        results = DBManager().query(sql, True)
+        results = query(sql, True)
 
         for row in results:
 
@@ -199,7 +169,7 @@ class DBHandler:
 
         rst_relation = OntologyRelation()
 
-        results = DBManager().query(sql, True)
+        results = query(sql, True)
 
         for row in results:
 
@@ -294,7 +264,7 @@ class DBHandler:
 
             sql = (sql % '1')
 
-        results = DBManager().query(sql, True)
+        results = query(sql, True)
 
         for row in results:
 
@@ -305,14 +275,14 @@ class DBHandler:
     @staticmethod
     def save_crowd_data(sql):
 
-        DBManager().save(sql)
+        save(sql)
 
     @staticmethod
     def get_crowd_data(sql):
 
         rst = []
 
-        results = DBManager().query(sql, True)
+        results = query(sql, True)
 
         for row in results:
 
