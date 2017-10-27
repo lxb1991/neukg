@@ -28,22 +28,16 @@ class DBManager(object):
 
             DBManager.__instance = object.__new__(cls, *args, **kwargs)
 
+            DBManager.__instance.__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
+                                   passwd='lxb123456', db='textmining', charset='utf8')
+
         DBManager.__mutex.release()
 
         return DBManager.__instance
 
     def __init__(self):
 
-        DBManager.__mutex.acquire()  # 加锁 防止多次init
-
-        if not DBManager.__instance.__pool:
-
-            logger.info(' DBManager 连接池 pool 初始化')
-
-            self.__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
-                                   passwd='lxb123456', db='textmining', charset='utf8')
-
-        DBManager.__mutex.release()
+        pass
 
     def query(self, sql, * is_dic):
         """ is_dic type: bool. 返回 cursor 是否需要使用 DictCursor """
