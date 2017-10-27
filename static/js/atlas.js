@@ -6,6 +6,8 @@ var Renderer = function(elt){
     var ctx = canvas.getContext("2d");
     var gfx = arbor.Graphics(canvas);
     var sys = null;
+    // mark 代表当前的选中元素
+    var mark = null;
 
     var _vignette = null;
     var selected = null,
@@ -49,6 +51,10 @@ var Renderer = function(elt){
             gfx.oval(pt.x-w/2, pt.y-w/2, w, w, {fill:node.data.color, alpha:node.data.alpha});
             gfx.text(node.name, pt.x, pt.y+7, {color:"white", align:"center", font:"Arial", size:12});
             gfx.text(node.name, pt.x, pt.y+7, {color:"white", align:"center", font:"Arial", size:12})
+          }else if(node == mark){
+            gfx.rect(pt.x-w/2-25, pt.y-8, w+50, 20, 4, {fill:node.data.color, alpha:node.data.alpha});
+            gfx.text(node.name+" 点击查看", pt.x, pt.y+9, {color:"white", align:"center", font:"Arial", size:13});
+            gfx.text(node.name+" 点击查看", pt.x, pt.y+9, {color:"white", align:"center", font:"Arial", size:13})
           }else{
             gfx.rect(pt.x-w/2, pt.y-8, w, 20, 4, {fill:node.data.color, alpha:node.data.alpha});
             gfx.text(node.name, pt.x, pt.y+9, {color:"white", align:"center", font:"Arial", size:12});
@@ -132,15 +138,20 @@ var Renderer = function(elt){
 
         var handler = {
           moved:function(e){
+
             var pos = $(canvas).offset();
             _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top);
             nearest = sys.nearest(_mouseP);
 
-            if (!nearest.node) return false;
+            if (!nearest.node){
+              return false;
+            }
 
             if (nearest.node.data.shape!='dot'){
               selected = (nearest.distance < 50) ? nearest : null;
-              if (selected){
+              mark = null;
+              if (selected && selected.node.data.link){
+                 mark = selected.node;
                  dom.addClass('linkable');
                  window.status = selected.node.data.link.replace(/^\//,"http://"+window.location.host+"/").replace(/^#/,'')
               }

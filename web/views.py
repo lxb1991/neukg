@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.shortcuts import render
-from DataEngine import memcache, engine
+from DataEngine import memcache, engine, common
 from DataEngine.data import CrowdData
 import logging
 
@@ -15,69 +15,117 @@ def index(request):
     return render(request, 'index.html')
 
 
-def search(request, query):
+def search(request):
 
-    feedback = {}
+    query = request.POST.get('query_word')
 
-    logger.info("输入的参数：%s" % query)
+    if query and query.replace(" ", ""):
 
-    # 查看是否有科研人员
-    staff = memcache.researcher_generate(query)
+        query = query.replace(" ", "")
 
-    if staff:
+        try:
 
-        return to_researcher(request, query, staff)
+            feedback = {}
 
-    # 查看是否有概念的信息
-    topics = memcache.topic_generate(query)
+            logger.info("输入的参数：%s" % query)
 
-    if topics:
+            # 查看是否有科研人员
+            staff = memcache.researcher_generate(query)
 
-        return to_topic(request, query, topics)
+            if staff:
 
-    feedback['query'] = query
+                return to_researcher(request, query, staff)
 
-    return render(request, "noresult.html", feedback)
+            # 查看是否有概念的信息
+            topics = memcache.topic_generate(query)
+
+            if topics:
+
+                return to_topic(request, query, topics)
+
+            feedback['query'] = query
+
+            return render(request, "noresult.html", feedback)
+
+        except UnicodeDecodeError as e:
+
+            logger.error('编码错误', e.message)
+
+            return render(request, "index.html")
+
+    return render(request, "index.html")
 
 
 def researcher(request, query):
 
-    data = memcache.researcher_generate(query)
+    query = common.Encrypt.decrypt(query).replace(" ", "")
 
-    return to_researcher(request, query, data)
+    if query:
+
+        data = memcache.researcher_generate(query)
+
+        return to_researcher(request, query, data)
+
+    else:
+
+        return render(request, "index.html")
 
 
 def topic(request, query):
 
-    topics = memcache.topic_generate(query)
+    query = common.Encrypt.decrypt(query).replace(" ", "")
 
-    return to_topic(request, query, topics)
+    if query:
+
+        topics = memcache.topic_generate(query)
+
+        return to_topic(request, query, topics)
+
+    else:
+
+        return render(request, "index.html")
 
 
 def to_researcher(request, query, data):
 
-    feedback = {}
+    try:
 
-    logger.info("输入的参数：%s" % query)
+        feedback = {}
 
-    feedback['query'] = query
+        logger.info("to_researcher的参数：%s" % query)
 
-    feedback['researcher'] = data
+        feedback['query'] = query
 
-    return render(request, 'researcher.html', feedback)
+        feedback['researcher'] = data
+
+        return render(request, 'researcher.html', feedback)
+
+    except UnicodeDecodeError as e:
+
+        logger.error('编码错误', e.message)
+
+        return render(request, "index.html")
 
 
 def to_topic(request, query, topics):
 
-    feedback = {}
+    try:
 
-    logger.info("输入的参数：%s" % query)
+        feedback = {}
 
-    feedback['query'] = query
+        logger.info("to_topic的参数：%s" % query)
 
-    feedback['topics'] = topics
+        feedback['query'] = query
 
-    return render(request, 'topic.html', feedback)
+        feedback['topics'] = topics
+
+        return render(request, 'topic.html', feedback)
+
+    except UnicodeDecodeError as e:
+
+        logger.error('编码错误', e.message)
+
+        return render(request, "index.html")
 
 
 def crowd(request):

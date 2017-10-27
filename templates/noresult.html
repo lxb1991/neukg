@@ -5,8 +5,11 @@
     <div class="search_top">
         <div class="s-bar">
             <div>
-                <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
-                <input type="submit" id="query" value="搜索" onclick="query()"/>
+                <form action="/search/" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
+                    <input type="submit" id="query" value="搜索"/>
+                </form>
             </div>
         </div>
     </div>
@@ -29,7 +32,7 @@
           <p>
               <a class="btn btn-success" href="/crowddata/" role="button">添加数据</a>
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <a class="btn btn-info" href="/index/" role="button">残忍拒绝</a>
+              <a class="btn btn-info" href="/" role="button">残忍拒绝</a>
           </p>
 
         </div>

@@ -22,7 +22,7 @@ urlpatterns = [
 
     url(r'^index/$', views.index),
 
-    url(r'^search/(?P<query>[^/]*)/$', views.search, name="search"),
+    url(r'^search/$', views.search, name="search"),
 
     url(r'^researcher/(?P<query>[^/]*)/$', views.researcher, name="researcher"),
 

@@ -15,23 +15,13 @@
 
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <!-- char.js 文件 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
-    <!-- arbor.js -->
-    <script src="{% static "/js/public.js" %}" type="text/javascript"></script>
 
+    <!-- arbor.js -->
     <script src="{% static "/js/arbor.js" %}" type="text/javascript"></script>
     <script src="{% static "/js/atlas.js" %}" type="text/javascript"></script>
     <script src="{% static "/js/arbor-graphics.js" %}" type="text/javascript"></script>
 
-    <style>
-        #toTop {width:90px; background:#353535; text-align:center; padding: 8px 10px 8px 10px; position:fixed;
-                bottom: 60px;right: 10px;cursor: pointer;display: none;z-index: 100;font-size: 13px;color: #979797; -webkit-border-radius: 10px;
-                -moz-border-radius: 10px;-o-border-radius: 10px;border-radius: 10px;-moz-box-shadow: 0 1px 3px #353535 inset;
-                -o-box-shadow: 0 1px 3px #353535 inset;-webkit-box-shadow: 0 1px 3px #353535 inset;box-shadow: 0 1px 3px #353535 inset;}
-    </style>
-
-    <title>在线演示</title>
+    <title>爱图谱</title>
 </head>
 <body>
 
@@ -41,8 +31,9 @@
 
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-              <a class="navbar-brand" href="/index/">
-                  <img alt="Brand" style="max-width:100px;margin-top:-7px;" src="/static/image/logo.jpg"></a>
+                  <a href="/" class="navbar-left">
+                    <img style="max-width: 10em;" src="/static/image/logo.jpg">
+                  </a>
             </div>
 
             <div class="collapse navbar-collapse" id="kgtm-navbar-collapse">
@@ -59,11 +50,9 @@
 
         {% endblock %}
 
-
-    <div id="toTop">回到顶部</div>
     <footer>
         <div class="copyright">
-             <p>2017 &copy 东北大学自然语言处理实验室知识图谱组 | <a href="http://www.miibeian.gov.cn/" target="_blank">  辽ICP备17017724号-1 </a></p>
+             <p><a href="http://faculty.neu.edu.cn/ise/renfeiliang/index.html" target="_blank">2017 &copy 东北大学自然语言处理实验室知识图谱组 </a>|   辽ICP备17017724号-1 </p>
         </div>
     </footer>
 </body>

@@ -5,13 +5,22 @@
     <div class="search_top">
         <div class="s-bar">
             <div>
-                <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
-                <input type="submit" id="query" value="搜索" onclick="query()"/>
+                <form action="/search/" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
+                    <input type="submit" id="query" value="搜索"/>
+                </form>
             </div>
         </div>
     </div>
-
+    {% load tag %}
     <canvas id="viewport"></canvas>
+
+    {% if topics.concept %}
+        <div class="concept">
+            <div class="alert alert-info" role="alert">{{ topics.concept }}</div>
+        </div>
+    {% endif %}
     <script>
         $(document).ready(function () {
 
@@ -19,41 +28,57 @@
               nodes:{
                     "{{query}}":{color:"#FF3900", shape:"dot", alpha:1},
 
+                    {% if topics.bilingual_cn %}
                     "相关双语":{color:"#FF8B00", shape:"dot", alpha:1},
 
                     {% for info in topics.bilingual_cn %}
-                        '{{ info }};':{color:"#086CA2", alpha:1, link:"{% url 'topic' query=info %}"},
+                        '{{ info }},':{color:"#086CA2", alpha:1, link:"/topic/{{ info|encrypt }}"},
                     {% endfor %}
 
                     {% for info in topics.bilingual_en %}
-                        '{{ info }};':{color:"#00B454", alpha:1, link:"{% url 'topic' query=info %}"},
+                        '{{ info }};':{color:"#00B454", alpha:1, link:"/topic/{{ info|encrypt }}"},
                     {% endfor %}
+                    {% endif %}
 
+                    {% if topics.topics_upper %}
                     "上位概念":{color:"#FF8B00", shape:"dot", alpha:1},
                     {% for upper in topics.topics_upper %}
-                        '{{ upper }}':{color:"#086CA2", alpha:1, link:"{% url 'topic' query=upper %}"},
+                        '{{ upper }}':{color:"#086CA2", alpha:1, link:"/topic/{{ upper|encrypt }}"},
                     {% endfor %}
+                    {% endif %}
+
+                    {% if topics.topics_lower %}
                     "下位概念":{color:"#FF8B00", shape:"dot", alpha:1},
                     {% for lower in topics.topics_lower %}
-                        '{{ lower }}':{color:"#086CA2", alpha:1, link:"{% url 'topic' query=lower %}"},
+                        '{{ lower }}':{color:"#086CA2", alpha:1, link:"/topic/{{ lower|encrypt }}"},
                     {% endfor %}
-
+                    {% endif %}
                     },
+
               edges:{
                     "{{query}}":{
+                        {% if topics.topics_upper %}
                         "上位概念":{length:.8},
+                        {% endif %}
+
+                        {% if topics.topics_lower %}
                         "下位概念":{length:.8},
+                        {% endif %}
+
+                        {% if topics.bilingual_cn %}
                         "相关双语":{length:.8},
+                        {% endif %}
                     },
 
+                    {% if topics.bilingual_cn %}
                     "相关双语":{
                     {% for info in topics.bilingual_cn %}
-                        "{{ info }};":{length:.5},
+                        "{{ info }},":{length:.5},
                     {% endfor %}
                     },
 
                     {% for cn in topics.bilingual_cn %}
-                        "{{ cn }};":{
+                        "{{ cn }},":{
                             {% for en in topics.bilingual_en %}
                                 {% ifequal forloop.counter forloop.parentloop.counter %}
                                     '{{ en}};':{},
@@ -61,18 +86,23 @@
                             {% endfor %}
                         },
                     {% endfor %}
+                    {% endif %}
 
+                    {% if topics.topics_upper %}
                     '上位概念':{
                     {% for upper in topics.topics_upper %}
                         '{{ upper }}':{},
                     {% endfor %}
                     },
+                    {% endif %}
 
+                    {% if topics.topics_lower %}
                     '下位概念':{
                     {% for lower in topics.topics_lower %}
                         '{{ lower }}':{},
                     {% endfor %}
                     },
+                    {% endif %}
               }
             };
             initGraph(theUI);

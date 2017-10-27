@@ -5,12 +5,15 @@
     <div class="search_top">
         <div class="s-bar">
             <div>
-                <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
-                <input type="submit" id="query" value="搜索" onclick="query()"/>
+                <form action="/search/" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
+                    <input type="submit" id="query" value="搜索"/>
+                </form>
             </div>
         </div>
     </div>
-
+    {% load tag %}
     <canvas id="viewport"></canvas>
     <script>
     $(document).ready(function () {
@@ -19,50 +22,84 @@
           nodes:{
                 "{{query}}":{color:"#FF3900", shape:"dot", alpha:1},
 
+                {% if researcher.topics %}
                 "研究方向":{color:"#FF8B00", shape:"dot", alpha:1},
                 {% for topic in researcher.topics %}
-                    '{{ topic }}':{color:"#086CA2", alpha:1, link:"{% url 'topic' query=topic %}"},
+                    '{{ topic }}':{color:"#086CA2", alpha:1, link:"/topic/{{topic|encrypt}}/"},
                 {% endfor %}
+                {% endif %}
+
+                {% if researcher.researchers %}
                 "相关人员":{color:"#FF8B00", shape:"dot", alpha:1},
                 {% for item in researcher.researchers %}
-                    '{{ item }}':{color:"#086CA2", alpha:1, link:"{% url 'researcher' query=item %}"},
+                    '{{ item }}':{color:"#086CA2", alpha:1, link:"/researcher/{{ item|encrypt }}/"},
                 {% endfor %}
+                {% endif %}
+
+                {% if researcher.organizations %}
                 "所在机构":{color:"#FF8B00", shape:"dot", alpha:1},
                 {% for org in researcher.organizations %}
                     '{{ org }}':{color:"#086CA2", alpha:1},
                 {% endfor %}
+                {% endif %}
+
+                {% if researcher.journals %}
                 "论文出版社":{color:"#FF8B00", shape:"dot", alpha:1},
                 {% for journal in researcher.journals %}
                     '{{ journal }}':{color:"#086CA2", alpha:1},
                 {% endfor %}
+                {% endif %}
                 },
           edges:{
                 "{{query}}":{
+                    {% if researcher.topics %}
                     "研究方向":{length:.8},
+                    {% endif %}
+
+                    {% if researcher.researchers %}
                     "相关人员":{length:.8},
+                    {% endif %}
+
+                    {% if researcher.organizations %}
                     "所在机构":{length:.8},
+                    {% endif %}
+
+                    {% if researcher.journals %}
                     "论文出版社":{length:.8},
+                    {% endif %}
                 },
+
+                {% if researcher.topics %}
                 '研究方向':{
                 {% for topic in researcher.topics %}
                     '{{ topic }}':{},
                 {% endfor %}
                 },
+                {% endif %}
+
+                {% if researcher.researchers %}
                 '相关人员':{
                 {% for item in researcher.researchers %}
                     '{{ item }}':{},
                 {% endfor %}
                 },
+                {% endif %}
+
+                {% if researcher.organizations %}
                 '所在机构':{
                 {% for org in researcher.organizations %}
                     '{{ org }}':{},
                 {% endfor %}
                 },
+                {% endif %}
+
+                {% if researcher.journals %}
                 '论文出版社':{
                 {% for journal in researcher.journals %}
                     '{{ journal }}':{length:.5},
                 {% endfor %}
                 },
+                {% endif %}
           }
         };
         initGraph(theUI);
