@@ -2,19 +2,15 @@
 
 {% block content %}
 
-    <div class="search_top">
-        <div class="s-bar">
-            <div>
-                <form action="/search/" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
-                    <input type="submit" id="query" value="搜索"/>
-                </form>
-            </div>
+    {% load tag %}
+    <div class="concept">
+        <div class="panel panel-primary">
+          <div class="panel-heading">{{ query }} 图谱关系：</div>
+          <div class="panel-body-nopadding">
+               <canvas id="viewport"></canvas>
+          </div>
         </div>
     </div>
-    {% load tag %}
-    <canvas id="viewport"></canvas>
     <script>
     $(document).ready(function () {
 
@@ -44,7 +40,7 @@
                 {% endif %}
 
                 {% if researcher.journals %}
-                "论文出版社":{color:"#FF8B00", shape:"dot", alpha:1},
+                "发表论文期刊":{color:"#FF8B00", shape:"dot", alpha:1},
                 {% for journal in researcher.journals %}
                     '{{ journal }}':{color:"#086CA2", alpha:1},
                 {% endfor %}
@@ -65,7 +61,7 @@
                     {% endif %}
 
                     {% if researcher.journals %}
-                    "论文出版社":{length:.8},
+                    "发表论文期刊":{length:.8},
                     {% endif %}
                 },
 
@@ -94,7 +90,7 @@
                 {% endif %}
 
                 {% if researcher.journals %}
-                '论文出版社':{
+                '发表论文期刊':{
                 {% for journal in researcher.journals %}
                     '{{ journal }}':{length:.5},
                 {% endfor %}

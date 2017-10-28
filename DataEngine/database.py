@@ -1,8 +1,7 @@
 # coding=utf-8
 import MySQLdb
-import threading
 from DBUtils.PooledDB import PooledDB
-from data import Const, PaperData, OntologyRelation, RelationList, GeneralRelation, BiData, CrowdData
+from data import Const, PaperData, OntologyRelation, GeneralRelation, BiData, CrowdData
 import logging
 
 
@@ -173,10 +172,6 @@ class DBHandler:
 
         for row in results:
 
-            rc = RelationList()
-
-            rc.tgt_concept = row['concept%s' % mark]
-
             gl = GeneralRelation()
 
             gl.tgt_concept = row['concept%s' % mark]
@@ -184,68 +179,6 @@ class DBHandler:
             if gl.tgt_concept and "/" in gl.tgt_concept:
 
                 continue
-
-            rl_rst = ''
-
-            dot_mark = 0  # 是否需要加顿号
-
-            if row['e_relation'] == "E":
-
-                rst_relation.e_list.append(rc)
-
-                rl_rst += '等价关系'
-
-                dot_mark += 1
-
-            if row['h_relation'] == "H":
-
-                rst_relation.h_list.append(rc)
-
-                if dot_mark >= 1:
-
-                    rl_rst += '、'
-
-                rl_rst += '层次关系'
-
-                dot_mark += 1
-
-            if row['s_relation'] == "S":
-
-                rst_relation.s_list.append(rc)
-
-                if dot_mark >= 1:
-
-                    rl_rst += '、'
-
-                rl_rst += '子类关系'
-
-                dot_mark += 1
-
-            if row['m_relation'] == "M":
-
-                rst_relation.m_list.append(rc)
-
-                if dot_mark >= 1:
-
-                    rl_rst += '、'
-
-                rl_rst += '部分关系'
-
-                dot_mark += 1
-
-            if row['i_relation'] == "I":
-
-                rst_relation.i_list.append(rc)
-
-                if dot_mark >= 1:
-
-                    rl_rst += '、'
-
-                rl_rst += '实例关系'
-
-                dot_mark += 1
-
-            gl.relations = rl_rst
 
             rst_relation.g_list.append(gl)
 

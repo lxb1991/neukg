@@ -92,20 +92,6 @@ class OntologyRelation:
 
         self.g_list = []  # 本体之间 全部 关系集合 GeneralRelation
 
-        self.h_list = []  # 本体之间 分类 关系集合 RelationList
-        self.e_list = []
-        self.s_list = []
-        self.i_list = []
-        self.m_list = []
-
-
-class RelationList:
-    """ 本体之间的关系 E:等价关系  H:层次关系 S:子类关系 M:部分关系 I:实例关系 """
-
-    def __init__(self):
-
-        self.tgt_concept = ''
-
 
 class GeneralRelation:
     """ 全部的关系 以及 关系描述 """
@@ -113,7 +99,6 @@ class GeneralRelation:
     def __init__(self):
 
         self.tgt_concept = ''
-        self.relations = ''
 
 
 class BiData:

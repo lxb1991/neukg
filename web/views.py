@@ -12,7 +12,11 @@ logger = logging.getLogger('pixiu')
 
 def index(request):
 
-    return render(request, 'index.html')
+    feedback = dict()
+
+    feedback['index'] = True
+
+    return render(request, 'index.html', feedback)
 
 
 def search(request):
@@ -53,7 +57,7 @@ def search(request):
 
             return render(request, "index.html")
 
-    return render(request, "index.html")
+    return index(request)
 
 
 def researcher(request, query):
@@ -68,7 +72,7 @@ def researcher(request, query):
 
     else:
 
-        return render(request, "index.html")
+        return index(request)
 
 
 def topic(request, query):
@@ -83,7 +87,7 @@ def topic(request, query):
 
     else:
 
-        return render(request, "index.html")
+        return index(request)
 
 
 def to_researcher(request, query, data):
@@ -104,7 +108,7 @@ def to_researcher(request, query, data):
 
         logger.error('编码错误', e.message)
 
-        return render(request, "index.html")
+        return index(request)
 
 
 def to_topic(request, query, topics):
@@ -125,7 +129,7 @@ def to_topic(request, query, topics):
 
         logger.error('编码错误', e.message)
 
-        return render(request, "index.html")
+        return index(request)
 
 
 def crowd(request):
@@ -137,7 +141,7 @@ def save(request):
 
     if not request.POST:
 
-        return render(request, "index.html")
+        return index(request)
 
     feedback = {}
 

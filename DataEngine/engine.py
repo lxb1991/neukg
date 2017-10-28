@@ -181,7 +181,8 @@ def get_info_topic(topic):
 
             topic_data.topics_lower.append(general_concept.tgt_concept)
 
-        topic_data.concept = generate_concept_describe(topic=topic, upper=upper, lower=lower)
+        topic_data.concept = get_relation_describe(topic=topic, upper_relations=upper.g_list,
+                                                   lower_relations=lower.g_list)
 
         return topic_data
 
@@ -237,74 +238,18 @@ def save_unchecked_paper(data):
 # 内部调用函数
 
 
-def generate_concept_describe(topic, upper, lower):
-    """ 概念描述 """
-
-    e_str = get_relation_describe(topic, upper.e_list, lower.e_list, "等价")
-
-    i_str = get_relation_describe(topic, upper.i_list, lower.i_list, "实例")
-
-    m_str = get_relation_describe(topic, upper.m_list, lower.m_list, "部分整体")
-
-    s_str = get_relation_describe(topic, upper.s_list, lower.s_list, "子类")
-
-    h_str = get_relation_describe(topic, upper.h_list, lower.h_list, "层次")
-
-    return e_str + i_str + m_str + s_str + h_str
-
-
-def get_relation_describe(topic, upper_relations, lower_relations, r_type):
-    """ 获取各个类别 r_type 的关系描述 """
+def get_relation_describe(topic, upper_relations, lower_relations):
+    """ 获取关系描述 """
 
     relation_desc = ''
 
     dot_mark = 0  # 是否需要加顿号 需要则说明有多个概念
 
-    if r_type == "层次":
-
-        for i in range(len(upper_relations)):
-
-            if not i:
-
-                relation_desc += topic + '是' + upper_relations[i].tgt_concept
-
-            else:
-
-                relation_desc += '、' + upper_relations[i].tgt_concept
-
-            dot_mark += 1
-
-        if dot_mark:
-
-            relation_desc += '等研究主题下的一个研究方向；'
-
-        for i in range(len(lower_relations)):
-
-            if not i and not dot_mark:
-
-                relation_desc += topic + '有' + lower_relations[i].tgt_concept
-
-            elif not i and dot_mark:
-
-                relation_desc += '\n同时' + topic + '也有' + lower_relations[i].tgt_concept
-
-            else:
-
-                relation_desc += '、' + lower_relations[i].tgt_concept
-
-            dot_mark += 1
-
-        if dot_mark and len(lower_relations):
-
-            relation_desc += '等研究内容；\n'
-
-        return relation_desc
-
     for i in range(len(upper_relations)):
 
         if not i:
 
-            relation_desc += topic + '是一个以自己为终点，并与上位概念：' + upper_relations[i].tgt_concept
+            relation_desc += topic + '概念是：' + upper_relations[i].tgt_concept
 
         else:
 
@@ -312,19 +257,19 @@ def get_relation_describe(topic, upper_relations, lower_relations, r_type):
 
         dot_mark += 1
 
-    if dot_mark:
+    if dot_mark and len(upper_relations):
 
-        relation_desc += '等有' + r_type + '关系的概念\n'
+        relation_desc += "等概念下的研究内容，"
 
     for i in range(len(lower_relations)):
 
         if not i and not dot_mark:
 
-            relation_desc += topic + '是一个以自己为起点，并与下位概念：' + lower_relations[i].tgt_concept
+            relation_desc += topic + '概念是：' + lower_relations[i].tgt_concept
 
         elif not i and dot_mark:
 
-            relation_desc += '同时' + topic + '也是一个以自己为起点，并与下位概念：' + lower_relations[i].tgt_concept
+            relation_desc += '同时' + topic + '又包括：' + lower_relations[i].tgt_concept
 
         else:
 
@@ -334,6 +279,6 @@ def get_relation_describe(topic, upper_relations, lower_relations, r_type):
 
     if dot_mark and len(lower_relations):
 
-        relation_desc += '等有' + r_type + '关系的概念；\n'
+        relation_desc += '等研究内容。\n'
 
     return relation_desc

@@ -14,7 +14,7 @@ class MyTestCase(TestCase):
 
     def test_encrypt(self):
 
-        text = common.Encrypt.encrypt("WINDOWS")
+        text = common.Encrypt.encrypt("多线程")
 
         print text
 

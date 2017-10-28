@@ -25,7 +25,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-fixed-top">
+    <nav class="navbar navbar-default">
 
         <div class="container-fluid">
 
@@ -34,6 +34,16 @@
                   <a href="/" class="navbar-left">
                     <img style="max-width: 10em;" src="/static/image/logo.jpg">
                   </a>
+                <div class="navbar-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                {% if not index %}
+                <form class="navbar-form navbar-left" action="/search/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <input class="form-control" type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
+                    </div>
+                    <input class="btn btn-primary" type="submit" id="query" value="&nbsp搜 索&nbsp"/>
+                </form>
+                {% endif %}
             </div>
 
             <div class="collapse navbar-collapse" id="kgtm-navbar-collapse">

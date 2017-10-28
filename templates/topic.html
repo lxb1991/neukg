@@ -2,23 +2,25 @@
 
 {% block content %}
 
-    <div class="search_top">
-        <div class="s-bar">
-            <div>
-                <form action="/search/" method="post">
-                    {% csrf_token %}
-                    <input type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
-                    <input type="submit" id="query" value="搜索"/>
-                </form>
+
+    {% load tag %}
+
+    <div class="concept">
+            <div class="panel panel-primary">
+              <div class="panel-heading">{{ query }} 图谱关系：</div>
+              <div class="panel-body-nopadding">
+                   <canvas id="viewport"></canvas>
+              </div>
             </div>
         </div>
-    </div>
-    {% load tag %}
-    <canvas id="viewport"></canvas>
-
     {% if topics.concept %}
         <div class="concept">
-            <div class="alert alert-info" role="alert">{{ topics.concept }}</div>
+            <div class="panel panel-primary">
+              <div class="panel-heading">概念解释：</div>
+              <div class="panel-body">
+                    {{ topics.concept }}
+              </div>
+            </div>
         </div>
     {% endif %}
     <script>
@@ -36,7 +38,7 @@
                     {% endfor %}
 
                     {% for info in topics.bilingual_en %}
-                        '{{ info }};':{color:"#00B454", alpha:1, link:"/topic/{{ info|encrypt }}"},
+                        '{{ info }};':{color:"#00B454", alpha:1},
                     {% endfor %}
                     {% endif %}
 
