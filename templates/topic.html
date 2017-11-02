@@ -55,6 +55,13 @@
                         '{{ lower }}':{color:"#086CA2", alpha:1, link:"/topic/{{ lower|encrypt }}"},
                     {% endfor %}
                     {% endif %}
+
+                    {% if topics.researchers %}
+                    "科研人员":{color:"#FF8B00", shape:"dot", alpha:1},
+                    {% for researcher in topics.researchers %}
+                        '{{ researcher }}':{color:"#086CA2", alpha:1, link:"/researcher/{{ researcher|encrypt }}"},
+                    {% endfor %}
+                    {% endif %}
                     },
 
               edges:{
@@ -69,6 +76,10 @@
 
                         {% if topics.bilingual_cn %}
                         "相关双语":{length:.8},
+                        {% endif %}
+
+                        {% if topics.researchers %}
+                        "科研人员":{length:.8},
                         {% endif %}
                     },
 
@@ -102,6 +113,14 @@
                     '下位概念':{
                     {% for lower in topics.topics_lower %}
                         '{{ lower }}':{},
+                    {% endfor %}
+                    },
+                    {% endif %}
+
+                    {% if topics.researchers %}
+                    '科研人员':{
+                    {% for researcher in topics.researchers %}
+                        '{{ researcher }}':{},
                     {% endfor %}
                     },
                     {% endif %}

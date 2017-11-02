@@ -161,6 +161,9 @@ def get_info_topic(topic):
 
         for data in datas:
 
+            # 添加相关人员信息：
+            Convert.str2list(data.c_authors, topic_data.researchers, capacity)
+
             if data.e_keys and data.c_keys:
 
                 Convert.str2list(data.c_keys, topic_data.bilingual_cn, capacity)

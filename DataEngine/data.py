@@ -74,6 +74,8 @@ class TopicData:
 
         self.bilinguals = BiData()
 
+        self.researchers = []
+
         self.bilingual_cn = []
 
         self.bilingual_en = []
