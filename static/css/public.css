@@ -53,6 +53,7 @@ footer {
 .navbar a:hover{
     color: rgba(255, 255, 255, 0.5);
 }
+
 .search {
   padding: 3em;
   width: 50%;
@@ -78,7 +79,7 @@ footer {
   font-weight: 600;
   color: rgb(55, 123, 181);
   padding: 1.3em 1em 1.3em 1.5em;
-  width: 70%;
+  width: 65%;
   text-shadow: rgba(80, 80, 80, 0.08) 1px 1px,
                rgba(80, 80, 80, 0.07) 2px 2px,
                rgba(80, 80, 80, 0.09) 3px 3px,
@@ -141,7 +142,7 @@ footer {
 
 .search .detail{
   width: 100%;
-  font-size: 1.3em;
+  font-size: 1.5em;
   font-weight: 400;
   margin-top: 1em;
   color: rgb(55, 123, 181);

@@ -7,7 +7,7 @@
     {% load staticfiles %}
 
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
@@ -36,7 +36,7 @@
                   </a>
                 <div class="navbar-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 {% if not index %}
-                <form class="navbar-form navbar-left" action="/search/" method="post">
+                <form class="navbar-form navbar-left" action="/search/" method="post" onsubmit="return Check()">
                     {% csrf_token %}
                     <div class="form-group">
                       <input class="form-control" type="text" name="query_word" id="query_word" value="输入人员姓名或概念" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = '输入人员姓名或概念';}">
@@ -56,9 +56,23 @@
 
     </nav>
 
-        {% block content %}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+              <h4>请正确填写您要查询的数据</h4>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        {% endblock %}
+    {% block content %}
+
+    {% endblock %}
+
 
     <footer>
         <div class="copyright">

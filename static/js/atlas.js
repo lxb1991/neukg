@@ -1,5 +1,3 @@
-
-
 var Renderer = function(elt){
     var dom = $(elt);
     var canvas = dom.get(0);
@@ -25,11 +23,6 @@ var Renderer = function(elt){
         that.resize();
         that._initMouseHandling();
 
-        if (document.referrer.match(/echolalia|atlas|halfviz/)){
-          // if we got here by hitting the back button in one of the demos,
-          // start with the demos section pre-selected
-          that.switchSection('demos')
-        }
       },
       resize:function(){
         canvas.width = $(window).width();
@@ -88,20 +81,6 @@ var Renderer = function(elt){
         // bot
         ctx.fillStyle = _vignette.bot;
         ctx.fillRect(0,h-r, w,r)
-      },
-
-      switchMode:function(e){
-        if (e.mode=='hidden'){
-          dom.stop(true).fadeTo(e.dt,0, function(){
-            if (sys) sys.stop();
-            $(this).hide()
-          })
-        }else if (e.mode=='visible'){
-          dom.stop(true).css('opacity',0).show().fadeTo(e.dt,1,function(){
-            that.resize()
-          });
-          if (sys) sys.start()
-        }
       },
 
       switchSection:function(newSection){
@@ -240,4 +219,18 @@ function initGraph(theUI) {
   sys.renderer = Renderer("#viewport");
   sys.graft(theUI)
 
+}
+
+function Check() {
+
+    if($.trim($('#query_word').val()) == "" || $.trim($('#query_word').val()) == "输入人员姓名或概念" ){
+
+        $('#myModal').modal();
+
+        return false;
+    }
+
+    $('#query').attr('disabled',"true");
+
+    return true;
 }

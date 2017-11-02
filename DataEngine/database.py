@@ -9,7 +9,7 @@ logger = logging.getLogger('pixiu')
 
 logger.info("初始化->数据库实例")
 
-__pool = PooledDB(creator=MySQLdb, mincached=2, maxcached=40, host='localhost', port=3306, user='root',
+__pool = PooledDB(creator=MySQLdb, mincached=10, maxcached=200, host='localhost', port=3306, user='root',
                                    passwd='lxb123456', db='textmining', charset='utf8')
 
 

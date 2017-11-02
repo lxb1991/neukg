@@ -10,7 +10,7 @@ mem = {}
 
 mem_count = []
 
-MAX_CACHE = 30
+MAX_CACHE = 100
 
 
 def cache(key, value):

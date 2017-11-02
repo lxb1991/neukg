@@ -20,7 +20,7 @@ class MyTestCase(TestCase):
 
         print len(text)
 
-        print common.Encrypt.decrypt(text)
+        print common.Encrypt.decrypt("UaRmUpyvUCyaVBVu")
 
 
     def tearDown(self):
