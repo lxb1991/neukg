@@ -12,6 +12,16 @@ logger = logging.getLogger('pixiu')
 
 def index(request):
 
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+
+        ip = request.META['HTTP_X_FORWARDED_FOR']
+
+    else:
+
+        ip = request.META['REMOTE_ADDR']
+
+    logger.info("访问的ip： %s"%ip)
+
     feedback = dict()
 
     feedback['index'] = True
