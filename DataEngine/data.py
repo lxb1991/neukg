@@ -66,6 +66,14 @@ class ResearcherData:
 
         self.journals = []
 
+    def is_empty(self):
+
+        if len(self.researchers) and len(self.organizations) and len(self.topics) and len(self.journals):
+
+            return False
+
+        return True
+
 
 class TopicData:
     """ 概念信息数据 """
@@ -85,6 +93,14 @@ class TopicData:
         self.topics_lower = []
 
         self.concept = ""
+
+    def is_empty(self):
+
+        if len(self.researchers) and len(self.topics_lower) and len(self.topics_upper) and len(self.bilingual_cn):
+
+            return False
+
+        return True
 
 
 class OntologyRelation:

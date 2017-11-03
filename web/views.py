@@ -36,14 +36,14 @@ def search(request):
             # 查看是否有科研人员
             staff = memcache.researcher_generate(query)
 
-            if staff:
+            if staff and not staff.is_empty():
 
                 return to_researcher(request, query, staff)
 
             # 查看是否有概念的信息
             topics = memcache.topic_generate(query)
 
-            if topics:
+            if topics and not topics.is_empty():
 
                 return to_topic(request, query, topics)
 
@@ -68,7 +68,11 @@ def researcher(request, query):
 
         data = memcache.researcher_generate(query)
 
-        return to_researcher(request, query, data)
+        if data and not data.is_empty():
+
+            return to_researcher(request, query, data)
+
+        return render(request, "noresult.html", {'query': query})
 
     else:
 
@@ -83,7 +87,11 @@ def topic(request, query):
 
         topics = memcache.topic_generate(query)
 
-        return to_topic(request, query, topics)
+        if topics and not topics.is_empty():
+
+            return to_topic(request, query, topics)
+
+        return render(request, "noresult.html", {'query': query})
 
     else:
 
